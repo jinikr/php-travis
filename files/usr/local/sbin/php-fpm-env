@@ -58,7 +58,12 @@ class PhpFpmEnvironment {
         'argc',
         'TMP',
         'TEMP',
-        'TMPDIR'
+        'TMPDIR',
+        'USE_DOCKERIZE',
+        'EXTRACONF',
+        'NGINX_BUILD_DEPS',
+        'NGINX_EXTRA_CONFIGURE_ARGS',
+        'NGINX_EXTRA_BUILD_DEPS'
     ];
 
     /**

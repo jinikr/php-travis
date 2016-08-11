@@ -133,7 +133,7 @@ ARG PHP_EXTRA_CONFIGURE_ARGS="\
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends\
+    && apt-get install -y --no-install-recommends \
     $NGINX_BUILD_DEPS $NGINX_EXTRA_BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/* \
     && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
