@@ -24,23 +24,23 @@ ENV NGINX_EXTRA_CONFIGURE_ARGS --sbin-path=/usr/sbin \
                                 --without-mail_smtp_module
 
 ENV NGINX_BUILD_DEPS \
-		bzip2 \
-		file \
-		libbz2-dev \
-		libcurl4-openssl-dev \
-		libmcrypt-dev \
-#		libreadline6-dev \
+        bzip2 \
+        file \
+        libbz2-dev \
+        libcurl4-openssl-dev \
+        libmcrypt-dev \
+#       libreadline6-dev \
         openssl \
-		libssl-dev \
-		libxslt1-dev \
-		libxml2-dev \
+        libssl-dev \
+        libxslt1-dev \
+        libxml2-dev \
         libpcre3 \
         libpcre3-dev \
         curl \
         libc6 
 
         
-ENV NGINX_EXTRA_BUILD_DEPS gcc libc-dev make pkg-config  \
+ENV NGINX_EXTRA_BUILD_DEPS gcc libc-dev make pkg-config \
                            libxml2 \
                            ca-certificates \
                            autoconf \
@@ -48,27 +48,27 @@ ENV NGINX_EXTRA_BUILD_DEPS gcc libc-dev make pkg-config  \
 
 
 ENV PHP_BUILD_DEPS \
-#		bzip2 \
-		re2c \
-#		file \
-#		libbz2-dev \
-#		libcurl4-openssl-dev \
-#		libjpeg-dev \
-#		libmcrypt-dev \
-#		libpng12-dev \
-#		libreadline6-dev \
-#		libssl-dev \
-#		libxslt1-dev \
-#		libxml2-dev \
-		mysql-client \
-		libmysqlclient-dev\
-		libyaml-dev \
-		librabbitmq-dev \
-		libsasl2-dev \
-		libicu-dev \
-		g++ \
-		python-software-properties \
-		software-properties-common
+#       bzip2 \
+        re2c \
+#       file \
+#       libbz2-dev \
+#       libcurl4-openssl-dev \
+#       libjpeg-dev \
+#       libmcrypt-dev \
+#       libpng12-dev \
+#       libreadline6-dev \
+#       libssl-dev \
+#       libxslt1-dev \
+#       libxml2-dev \
+        mysql-client \
+        libmysqlclient-dev\
+        libyaml-dev \
+        librabbitmq-dev \
+        libsasl2-dev \
+        libicu-dev \
+        g++ \
+        python-software-properties \
+        software-properties-common
 
 
 ENV PHP_INI_DIR /etc/php
@@ -76,70 +76,70 @@ ENV PHP_INI_DIR /etc/php
 ENV PHP_EXTRA_CONFIGURE_ARGS --with-fpm-user=www-data --with-fpm-group=www-data \
                          --with-libdir=lib64 \
                          --with-openssl \
-						 --with-php-config \
-						 --with-curl \
-						 --with-iconv \
+                         --with-php-config \
+                         --with-curl \
+                         --with-iconv \
                          --with-pdo-mysql \
-						 --with-curl \
-						 --with-mcrypt \
-						 --with-openssl \
-						 --with-xsl \
-						 --with-zlib \
+                         --with-curl \
+                         --with-mcrypt \
+                         --with-openssl \
+                         --with-xsl \
+                         --with-zlib \
                          --enable-fpm \
                          --enable-opcache \
-                         --enable-sockets  \
-						 --enable-bcmath \
-						 --enable-mbstring \
-						 --enable-intl \
-						 --enable-mysqlnd \
+                         --enable-sockets \
+                         --enable-bcmath \
+                         --enable-mbstring \
+                         --enable-intl \
+                         --enable-mysqlnd \
 #                        --with-gd \
 #                        --with-mysql \
 #                        --with-mysqli \
-#						 --with-bz2 \
-#						 --with-gd \
-#						 --with-jpeg-dir \
-#						 --with-mysqli \
-#						 --with-pdo-mysql \						 
-#						 --with-readline \
-#						 --enable-pcntl \
-#						 --enable-gd-native-ttf \
-#						 --enable-calendar \
-#						 --enable-zip \
-						 --without-sqlite3 \
-						 --without-pdo-sqlite \
-                   	 	 --disable-cgi \
-						 --disable-short-tags \
-						 --disable-fileinfo \
-						 --disable-posix \
-						 --disable-tokenizer
+#                        --with-bz2 \
+#                        --with-gd \
+#                        --with-jpeg-dir \
+#                        --with-mysqli \
+#                        --with-pdo-mysql \                      
+#                        --with-readline \
+#                        --enable-pcntl \
+#                        --enable-gd-native-ttf \
+#                        --enable-calendar \
+#                        --enable-zip \
+                         --without-sqlite3 \
+                         --without-pdo-sqlite \
+                         --disable-cgi \
+                         --disable-short-tags \
+                         --disable-fileinfo \
+                         --disable-posix \
+                         --disable-tokenizer
 
 
 
-		
+        
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
 RUN  apt-get update \
-    && apt-get install -y    \
+    && apt-get install -y \
         $NGINX_BUILD_DEPS $NGINX_EXTRA_BUILD_DEPS \
         --no-install-recommends && rm -rf /var/lib/apt/lists/* \
     && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
-	&& mkdir -p /var/log/nginx \
-	&& set -x \
-	&& curl -SL "http://nginx.org/download/${NGINX_VERSION}.tar.gz" -o nginx.tar.bz2 \
-	&& curl -SL "http://nginx.org/download/${NGINX_VERSION}.tar.gz.asc" -o nginx.tar.bz2.asc \
-	&& gpg --verify nginx.tar.bz2.asc \
-	&& mkdir -p /usr/src/nginx \
-	&& tar -xof nginx.tar.bz2 -C /usr/src/nginx --strip-components=1 \
-	&& rm nginx.tar.bz2* \
-	&& cd /usr/src/nginx \
-	&& ./configure \
-		$NGINX_EXTRA_CONFIGURE_ARGS \
-	&& make -j"$(nproc)" \
-	&& make install \
-	&& { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
-	&& make clean
-#	&& apt-get purge --yes --force-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS
+    && mkdir -p /var/log/nginx \
+    && set -x \
+    && curl -SL "http://nginx.org/download/${NGINX_VERSION}.tar.gz" -o nginx.tar.bz2 \
+    && curl -SL "http://nginx.org/download/${NGINX_VERSION}.tar.gz.asc" -o nginx.tar.bz2.asc \
+    && gpg --verify nginx.tar.bz2.asc \
+    && mkdir -p /usr/src/nginx \
+    && tar -xof nginx.tar.bz2 -C /usr/src/nginx --strip-components=1 \
+    && rm nginx.tar.bz2* \
+    && cd /usr/src/nginx \
+    && ./configure \
+        $NGINX_EXTRA_CONFIGURE_ARGS \
+    && make -j"$(nproc)" \
+    && make install \
+    && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
+    && make clean
+#   && apt-get purge --yes --force-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS
 
 
 RUN userdel www-data && groupadd -r www-data -g 433 && \
@@ -149,7 +149,7 @@ RUN userdel www-data && groupadd -r www-data -g 433 && \
     chown -R www-data:www-data /home/www-data /var/www && \
     chmod 700 /home/www-data && \
     chmod 711 /var/www && \
-	mkdir -p /etc/nginx/conf.d/
+    mkdir -p /etc/nginx/conf.d/
 
 COPY files /
 
@@ -164,7 +164,7 @@ EXPOSE 443
 
 
 RUN apt-get update && apt-get install -y ca-certificates curl libxml2 autoconf \
-    gcc libc-dev make pkg-config  \
+    gcc libc-dev make pkg-config \
     runit nano less tmux wget git \
     $PHP_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
@@ -172,51 +172,51 @@ RUN apt-get update && apt-get install -y ca-certificates curl libxml2 autoconf \
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 ENV PHP5_KEY "6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1"
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys $PHP7_KEY \
-	&& mkdir -p $PHP_INI_DIR/conf.d \
-	&& set -x \
-	&& curl -SL "http://php.net/get/php-$PHP_VERSION.tar.bz2/from/this/mirror" -o php.tar.bz2 \
-	&& curl -SL "http://php.net/get/php-$PHP_VERSION.tar.bz2.asc/from/this/mirror" -o php.tar.bz2.asc \
-	&& gpg --verify php.tar.bz2.asc \
-	&& mkdir -p /usr/src/php \
-	&& tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
-	&& rm php.tar.bz2* \
-	&& cd /usr/src/php \
-	&& ./configure \
-    	--sysconfdir="$PHP_INI_DIR" \
-		--with-config-file-path="$PHP_INI_DIR" \
-		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
-		$PHP_EXTRA_CONFIGURE_ARGS \
-	&& make -j"$(nproc)" \
-	&& make install \
-	&& { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps \
-	&& make clean
+    && mkdir -p $PHP_INI_DIR/conf.d \
+    && set -x \
+    && curl -SL "http://php.net/get/php-$PHP_VERSION.tar.bz2/from/this/mirror" -o php.tar.bz2 \
+    && curl -SL "http://php.net/get/php-$PHP_VERSION.tar.bz2.asc/from/this/mirror" -o php.tar.bz2.asc \
+    && gpg --verify php.tar.bz2.asc \
+    && mkdir -p /usr/src/php \
+    && tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
+    && rm php.tar.bz2* \
+    && cd /usr/src/php \
+    && ./configure \
+        --sysconfdir="$PHP_INI_DIR" \
+        --with-config-file-path="$PHP_INI_DIR" \
+        --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
+        $PHP_EXTRA_CONFIGURE_ARGS \
+    && make -j"$(nproc)" \
+    && make install \
+    && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps \
+    && make clean
 
 
 
 RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
 RUN sh -c "echo 'date.timezone = asia/seoul' >> ${PHP_INI_DIR}/php.ini"
 
-RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl  \
-	&& wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VER}.tar.gz  \
-	&& tar zxvf v${PHALCON_VER}.tar.gz && cd /usr/src/pecl/cphalcon-${PHALCON_VER}/build \
-	&& ./install \
+RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
+    && wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VER}.tar.gz \
+    && tar zxvf v${PHALCON_VER}.tar.gz && cd /usr/src/pecl/cphalcon-${PHALCON_VER}/build \
+    && ./install \
     && echo "extension=phalcon.so" > $PHP_INI_DIR/conf.d/phalcon.ini \
-	&& wget https://launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz \
-	&& tar xzf libmemcached-1.0.18.tar.gz \
-	&& cd libmemcached-1.0.18 \
-	&& ./configure --enable-sasl \
-	&& make -j"$(nproc)" \
-	&& make install \
+    && wget https://launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz \
+    && tar xzf libmemcached-1.0.18.tar.gz \
+    && cd libmemcached-1.0.18 \
+    && ./configure --enable-sasl \
+    && make -j"$(nproc)" \
+    && make install \
     && wget http://nz.archive.ubuntu.com/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_0.7.1-1_amd64.deb \
-	&& dpkg -i librabbitmq4_0.7.1-1_amd64.deb \
-	&& wget http://nz.archive.ubuntu.com/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_0.7.1-1_amd64.deb \
-	&& dpkg -i librabbitmq-dev_0.7.1-1_amd64.deb \
-	&& rm -rf *.deb libmemcached-1.0.18* \
-	&& rm -rf /usr/src/pecl/* \
-	&& apt-add-repository ppa:pinepain/libv8-5.2 -y \
-	&& apt-get update \
-	&& apt-get install libv8-5.2-dev -y --allow-unauthenticated
+    && dpkg -i librabbitmq4_0.7.1-1_amd64.deb \
+    && wget http://nz.archive.ubuntu.com/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_0.7.1-1_amd64.deb \
+    && dpkg -i librabbitmq-dev_0.7.1-1_amd64.deb \
+    && rm -rf *.deb libmemcached-1.0.18* \
+    && rm -rf /usr/src/pecl/* \
+    && apt-add-repository ppa:pinepain/libv8-5.2 -y \
+    && apt-get update \
+    && apt-get install libv8-5.2-dev -y --allow-unauthenticated
 
 # Install composer
 RUN bash -c "wget http://getcomposer.org/composer.phar && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer"
