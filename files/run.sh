@@ -17,6 +17,8 @@ export WEBROOT=${WEBROOT:-"/var/www/public"}
 rm -rf /etc/nginx/sites-available/default
 rm -rf /etc/nginx/sites-available/default-ssl
 
+mkdir -p /etc/nginx/sites-available
+
 if [ $USE_SSL ];
 then
     dockerize -template /etc/nginx/default-ssl.tmpl > /etc/nginx/sites-available/default-ssl
