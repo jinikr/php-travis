@@ -6,21 +6,25 @@ export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export EXTRACONF=${EXTRACONF:-";"}
 
-if [ $USE_DOCKERIZE == "yes" ];
-then
-    echo "USE the dockerize template";
-    dockerize -template /etc/php/php-fpm.tmpl > /etc/php/php-fpm.conf
-fi
+dockerize -template /etc/php/php-fpm.tmpl > /etc/php/php-fpm.conf
 
 export UPSTREAM=${UPSTREAM:-"localhost:9000"}
 export DOMAIN=${DOMAIN:-"localhost"}
 export LOCATION=${LOCATION:-"#ADD_LOCATION"}
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
-if [ $USE_DOCKERIZE == "yes" ];
+
+rm -rf /etc/nginx/sites-available/default
+rm -rf /etc/nginx/sites-available/default-ssl
+
+if [ $USE_SSL ];
 then
-    echo "USE the dockerize template";
-    dockerize -template /etc/nginx/default.tmpl > /etc/nginx/sites-available/default
+    dockerize -template /etc/nginx/default-ssl.tmpl > /etc/nginx/sites-available/default-ssl
+fi
+
+if [ $USE_SSL != "only" ];
+then
+	dockerize -template /etc/nginx/default.tmpl > /etc/nginx/sites-available/default
 fi
 
 nginx &

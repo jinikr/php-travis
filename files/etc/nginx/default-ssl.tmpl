@@ -1,7 +1,10 @@
 
 server {
 
-    listen 80 ;
+    listen 443 ssl;
+
+    ssl_certificate /var/certs/{{.Env.DOMAIN}}.cert;
+    ssl_certificate_key /var/certs/{{.Env.DOMAIN}}.key;
 
     server_name {{ .Env.DOMAIN }};
 
