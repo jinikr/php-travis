@@ -16,14 +16,18 @@ RUN echo "PHP version = ${PHP_VERSION}"
 ENV PHP_LIB redis-3.0.0 yaml-2.0.0RC8 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.1
 ENV PHALCON_VER 3.0.0
 
-ENV NGINX_EXTRA_CONFIGURE_ARGS --sbin-path=/usr/sbin \
-                                --conf-path=/etc/nginx/nginx.conf \
-                                --with-md5=/usr/lib --with-sha1=/usr/lib \
-                                --with-http_ssl_module --with-http_dav_module \
-                                --without-mail_pop3_module --without-mail_imap_module \
-                                --without-mail_smtp_module
+ARG NGINX_EXTRA_CONFIGURE_ARGS="\
+        --sbin-path=/usr/sbin \
+        --conf-path=/etc/nginx/nginx.conf \
+        --with-md5=/usr/lib \
+        --with-sha1=/usr/lib \
+        --with-http_ssl_module \
+        --with-http_dav_module \
+        --without-mail_pop3_module \
+        --without-mail_imap_module \
+        --without-mail_smtp_module"
 
-ENV NGINX_BUILD_DEPS \
+ARG NGINX_BUILD_DEPS="\
         bzip2 \
         file \
         libbz2-dev \
@@ -37,17 +41,24 @@ ENV NGINX_BUILD_DEPS \
         libpcre3 \
         libpcre3-dev \
         curl \
-        libc6 
+        libc6"
 
-        
-ENV NGINX_EXTRA_BUILD_DEPS gcc libc-dev make pkg-config \
-                           libxml2 \
-                           ca-certificates \
-                           autoconf \
-                           runit nano less tmux wget git
+ARG NGINX_EXTRA_BUILD_DEPS="\
+        gcc \
+        libc-dev \
+        make \
+        pkg-config \
+        libxml2 \
+        ca-certificates \
+        autoconf \
+        runit \
+        nano \
+        less \
+        tmux \
+        wget \
+        git"
 
-
-ENV PHP_BUILD_DEPS \
+ARG PHP_BUILD_DEPS="\
 #       bzip2 \
         re2c \
 #       file \
@@ -68,61 +79,63 @@ ENV PHP_BUILD_DEPS \
         libicu-dev \
         g++ \
         python-software-properties \
-        software-properties-common
+        software-properties-common"
 
+ARG PHP_EXTRA_BUILD_DEPS=""
 
 ENV PHP_INI_DIR /etc/php
 
-ENV PHP_EXTRA_CONFIGURE_ARGS --with-fpm-user=www-data --with-fpm-group=www-data \
-                         --with-libdir=lib64 \
-                         --with-openssl \
-                         --with-php-config \
-                         --with-curl \
-                         --with-iconv \
-                         --with-pdo-mysql \
-                         --with-curl \
-                         --with-mcrypt \
-                         --with-openssl \
-                         --with-xsl \
-                         --with-zlib \
-                         --enable-fpm \
-                         --enable-opcache \
-                         --enable-sockets \
-                         --enable-bcmath \
-                         --enable-mbstring \
-                         --enable-intl \
-                         --enable-mysqlnd \
-#                        --with-gd \
-#                        --with-mysql \
-#                        --with-mysqli \
-#                        --with-bz2 \
-#                        --with-gd \
-#                        --with-jpeg-dir \
-#                        --with-mysqli \
-#                        --with-pdo-mysql \                      
-#                        --with-readline \
-#                        --enable-pcntl \
-#                        --enable-gd-native-ttf \
-#                        --enable-calendar \
-#                        --enable-zip \
-                         --without-sqlite3 \
-                         --without-pdo-sqlite \
-                         --disable-cgi \
-                         --disable-short-tags \
-                         --disable-fileinfo \
-                         --disable-posix \
-                         --disable-tokenizer
-
-
-
-        
+ARG PHP_EXTRA_CONFIGURE_ARGS="\
+        --sysconfdir="$PHP_INI_DIR" \
+        --with-config-file-path="$PHP_INI_DIR" \
+        --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
+        --with-fpm-user=www-data \
+        --with-fpm-group=www-data \
+        --with-libdir=lib64 \
+        --with-openssl \
+        --with-php-config \
+        --with-curl \
+        --with-iconv \
+        --with-pdo-mysql \
+        --with-curl \
+        --with-mcrypt \
+        --with-openssl \
+        --with-xsl \
+        --with-zlib \
+        --enable-fpm \
+        --enable-opcache \
+        --enable-sockets \
+        --enable-bcmath \
+        --enable-mbstring \
+        --enable-intl \
+        --enable-mysqlnd \
+#       --with-gd \
+#       --with-mysql \
+#       --with-mysqli \
+#       --with-bz2 \
+#       --with-gd \
+#       --with-jpeg-dir \
+#       --with-mysqli \
+#       --with-pdo-mysql \                      
+#       --with-readline \
+#       --enable-pcntl \
+#       --enable-gd-native-ttf \
+#       --enable-calendar \
+#       --enable-zip \
+        --without-sqlite3 \
+        --without-pdo-sqlite \
+        --disable-cgi \
+        --disable-short-tags \
+        --disable-fileinfo \
+        --disable-posix \
+        --disable-tokenizer"
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
-RUN  apt-get update \
-    && apt-get install -y \
-        $NGINX_BUILD_DEPS $NGINX_EXTRA_BUILD_DEPS \
-        --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends\
+    $NGINX_BUILD_DEPS $NGINX_EXTRA_BUILD_DEPS \
+    && rm -rf /var/lib/apt/lists/* \
     && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
     && mkdir -p /var/log/nginx \
     && set -x \
@@ -133,14 +146,12 @@ RUN  apt-get update \
     && tar -xof nginx.tar.bz2 -C /usr/src/nginx --strip-components=1 \
     && rm nginx.tar.bz2* \
     && cd /usr/src/nginx \
-    && ./configure \
-        $NGINX_EXTRA_CONFIGURE_ARGS \
+    && ./configure $NGINX_EXTRA_CONFIGURE_ARGS \
     && make -j"$(nproc)" \
     && make install \
     && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
     && make clean
 #   && apt-get purge --yes --force-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS
-
 
 RUN userdel www-data && groupadd -r www-data -g 433 && \
     mkdir /home/www-data && \
@@ -157,17 +168,9 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm -f /dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-VOLUME ["/var/www", "/etc/nginx"]
-
-EXPOSE 80
-EXPOSE 443
-
-
-RUN apt-get update && apt-get install -y ca-certificates curl libxml2 autoconf \
-    gcc libc-dev make pkg-config \
-    runit nano less tmux wget git \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     $PHP_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS \
-    --no-install-recommends && rm -r /var/lib/apt/lists/*
+    && rm -r /var/lib/apt/lists/*
 
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 ENV PHP5_KEY "6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1"
@@ -181,11 +184,7 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys $PHP7_KEY \
     && tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
     && rm php.tar.bz2* \
     && cd /usr/src/php \
-    && ./configure \
-        --sysconfdir="$PHP_INI_DIR" \
-        --with-config-file-path="$PHP_INI_DIR" \
-        --with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
-        $PHP_EXTRA_CONFIGURE_ARGS \
+    && ./configure $PHP_EXTRA_CONFIGURE_ARGS \
     && make -j"$(nproc)" \
     && make install \
     && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
@@ -228,16 +227,12 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm -f dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" && rm -rf /usr/src/pecl/*
-#RUN bash -c "git clone https://github.com/rlerdorf/php-memcached" && cd php-memcached && phpize &&./configure && make && make install 
 
-#
-# Docker properties
-#
+VOLUME ["/var/www", "/etc/nginx", "/etc/php"]
 
-VOLUME ["/var/www", "/etc/php"]
-
+EXPOSE 80
+EXPOSE 443
 EXPOSE 9000
 
 
 CMD ["/run.sh"]
-# CMD ["/usr/local/sbin/runsvdir-init"]
