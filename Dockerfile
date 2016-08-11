@@ -195,7 +195,6 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys $PHP7_KEY \
 
 
 RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
-RUN sh -c "echo 'date.timezone = asia/seoul' >> ${PHP_INI_DIR}/php.ini"
 
 RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VER}.tar.gz \
