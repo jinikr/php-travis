@@ -16,7 +16,7 @@ export WEBROOT=${WEBROOT:-"/var/www/public"}
 
 
 # Display Version Details or not
-if [[ "$SHOW_VERSION" == "1" ]] ; then
+if [ "$SHOW_VERSION" == "1" ] ; then
     sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
     sed -i "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
 else
@@ -29,7 +29,7 @@ if [ ! -z "$TIMEZONE" ] ; then
 fi
 
 # Display PHP error's or not
-if [[ "$DEBUG" != "1" ]] ; then
+if [ "$DEBUG" != "1" ] ; then
     echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.conf
 else
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.conf
@@ -54,12 +54,12 @@ rm -rf /etc/nginx/sites-available/default
 rm -rf /etc/nginx/sites-available/default-ssl
 mkdir -p /etc/nginx/sites-available
 
-if [ $USE_SSL ];
+if [ ! -z "$USE_SSL" ];
 then
     dockerize -template /etc/nginx/default-ssl.tmpl > /etc/nginx/sites-available/default-ssl
 fi
 
-if [ $USE_SSL != "only" ];
+if [ "$USE_SSL" != "only" ];
 then
     dockerize -template /etc/nginx/default.tmpl > /etc/nginx/sites-available/default
 fi

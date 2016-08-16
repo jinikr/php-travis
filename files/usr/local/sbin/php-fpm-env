@@ -25,26 +25,19 @@ class PhpFpmEnvironment {
         '_',           // The caller executable script, not pertinent
         'HOME',        // Set correctly by php-fpm
         'TERM',        // Not pertinent in server context
-        'MYSQL_ENV_MYSQL_ROOT_PASSWORD', // from --link …:mysql
         'HOSTNAME',
         'PHP_INI_DIR',
-        'PHP5_KEY',
         'FPM_GROUP',
         'LS_COLORS',
         'PHP_LIB',
         'DOCKERIZE_VERSION',
         'PATH',
-        'PHP7_KEY',
         'PWD',
         'SHLVL',
-        'PHP_BUILD_DEPS',
-        'PHALCON_VER',
         'affinity:container',
         'LESSOPEN',
         'FPM_LISTEN',
         'LESSCLOSE',
-        'PHP_VERSION',
-        'PHP_EXTRA_CONFIGURE_ARGS',
         'FPM_USER',
         'OLDPWD',
         'PHP_SELF',
@@ -61,9 +54,20 @@ class PhpFpmEnvironment {
         'TMPDIR',
         'USE_DOCKERIZE',
         'EXTRACONF',
+        'PHALCON_VER',
+        'PHP_VERSION',
+        'PHP5_KEY',
+        'PHP7_KEY',
+        'PHP_BUILD_DEPS',
+        'PHP_EXTRA_CONFIGURE_ARGS',
+        'PHP_EXTRA_BUILD_DEPS',
         'NGINX_BUILD_DEPS',
         'NGINX_EXTRA_CONFIGURE_ARGS',
-        'NGINX_EXTRA_BUILD_DEPS'
+        'NGINX_EXTRA_BUILD_DEPS',
+        'UPSTREAM',
+        'LOCATION',
+        'WEBROOT',
+        'NGINX_VERSION'
     ];
 
     /**
@@ -82,7 +86,7 @@ class PhpFpmEnvironment {
         }
 
         //static::addHardcodedEnvironmentVariables($variables);
-
+        ksort($variables);
         return $variables;
     }
 
@@ -133,7 +137,9 @@ class PhpFpmEnvironment {
         $variables = static::getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            echo 'env["', $key, '"] = "', $value, '"', PHP_EOL;
+            if($key && $value) {
+                echo 'env["', $key, '"] = "', $value, '"', PHP_EOL;
+            }
         }
     }
 }
