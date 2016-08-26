@@ -124,7 +124,8 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
 #       --enable-zip \
         --without-sqlite3 \
         --without-pdo-sqlite \
-        --disable-tokenizer \
+        --enable-tokenizer \
+#       --disable-tokenizer \
         --disable-cgi \
         --disable-short-tags \
         --disable-fileinfo \
@@ -205,6 +206,9 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && dpkg -i librabbitmq-dev_0.8.0-1_amd64.deb \
     && rm -rf *.deb libmemcached-1.0.18* \
     && rm -rf /usr/src/pecl/*
+
+RUN pecl install xdebug \
+    && echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so" > ${PHP_INI_DIR}/conf.d/xdebug.ini
 
 RUN apt-add-repository ppa:pinepain/libv8-5.2 -y \
     && apt-get update \

@@ -1,0 +1,8 @@
+{
+    "name": "yjkim0/ph",
+    "require": {},
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.6",
+        "phpmd/phpmd": "^2.4"
+    }
+}
