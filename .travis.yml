@@ -6,7 +6,7 @@ php:
 before_script:
   - wget https://github.com/phalcon/cphalcon/archive/v3.0.0.tar.gz
   - tar zxvf v3.0.0.tar.gz
-  - cd build
+  - cd cphalcon-3.0.0/build
   - ./install
   - echo "extension=phalcon.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - cd ../
