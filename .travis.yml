@@ -1,11 +1,15 @@
 language: php
 php:
   - '7.0'
+
 # before_script: echo '' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 before_script:
+  - wget https://github.com/phalcon/cphalcon/archive/v3.0.0.tar.gz
+  - tar zxvf v${PHALCON_VER}.tar.gz
+  - cd build
+  - ./install
+  - echo "extension=phalcon.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - cd ../
   - composer update
   - ./vendor/bin/phpcs -sw --standard=PSR2 app
   - ./vendor/bin/phpmd app text cleancode
-script:
-  - phpunit tests
-
