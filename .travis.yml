@@ -9,7 +9,7 @@ before_script:
   - cd cphalcon-3.0.0/build
   - ./install
   - echo "extension=phalcon.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - cd ../
+  - cd ../../
   - composer update
   - ./vendor/bin/phpcs -sw --standard=PSR2 app
   - ./vendor/bin/phpmd app text cleancode
