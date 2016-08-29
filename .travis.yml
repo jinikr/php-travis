@@ -1,0 +1,9 @@
+language: php
+php:
+  - '7.0'
+# before_script: echo '' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+script:
+  - ./vendor/bin/phpcs -sw --standard=PSR2 app
+  - ./vendor/bin/phpmd app text cleancode
+  - phpunit tests
+
