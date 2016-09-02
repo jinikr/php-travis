@@ -1,14 +1,17 @@
 <?php
 
+include __DIR__ . "/../vendor/autoload.php";
+
 use Phalcon\Loader;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\Application;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Mvc\Url as UrlProvider;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
+use Phalcon\Mvc\Router;
+use App\Controllers\IndexController;
 
 try {
-
     // Register an autoloader
     $loader = new Loader();
     $loader->registerDirs([
@@ -33,14 +36,32 @@ try {
         return $url;
     });
 
+    $di->set(
+        'router',
+        function () {
+            // Create the router
+            $router = new Router();
+
+            // Define a route
+            $router->add(
+                "/",
+                [
+                    "namespace"  => "App\Controllers",
+                    "controller" => "index",
+                    "action"     => "index"
+                ]
+            );
+
+            return $router;
+        }
+    );
+
     $application = new Application($di);
 
     // Handle the request
     $response = $application->handle();
 
     $response->send();
-
 } catch (\Exception $e) {
-     echo "Exception: ", $e->getMessage();
+    echo "Exception: ", $e->getMessage();
 }
-
