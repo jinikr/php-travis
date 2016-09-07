@@ -208,7 +208,9 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && rm -rf /usr/src/pecl/*
 
 RUN pecl install xdebug \
-    && echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20151012/xdebug.so" > ${PHP_INI_DIR}/conf.d/xdebug.ini
+    && echo "zend_extension=xdebug.so" > ${PHP_INI_DIR}/conf.d/xdebug.ini
+
+RUN pecl install v8js
 
 RUN apt-add-repository ppa:pinepain/libv8-5.2 -y \
     && apt-get update \
