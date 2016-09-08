@@ -66,5 +66,7 @@ fi
 
 nginx &
 
+mysqld_safe &
+
 /usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.conf
 /usr/local/sbin/php-fpm -c ${PHP_INI_DIR} --nodaemonize
