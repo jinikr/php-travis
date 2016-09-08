@@ -13,7 +13,7 @@ ENV DOCKERIZE_VERSION 0.2.0
 ARG PHP_VERSION
 ENV PHP_VERSION 7.0.9
 RUN echo "PHP version = ${PHP_VERSION}"
-ENV PHP_LIB redis-3.0.0 yaml-2.0.0RC8 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.1
+ENV PHP_LIB redis-3.0.0 yaml-2.0.0RC8 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.2
 ENV PHALCON_VER 3.0.0
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
@@ -70,8 +70,8 @@ ENV PHP_BUILD_DEPS \
 #       libssl-dev \
 #       libxslt1-dev \
 #       libxml2-dev \
-        mysql-client \
-        libmysqlclient-dev\
+#       mysql-client \
+#       libmysqlclient-dev\
         libyaml-dev \
         librabbitmq-dev \
         libsasl2-dev \
@@ -163,6 +163,21 @@ RUN userdel www-data && groupadd -r www-data -g 433 && \
     chmod 711 /var/www && \
     mkdir -p /etc/nginx/conf.d/
 
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0xcbcb082a1bb943db \
+    && echo "deb http://mariadb.mirror.iweb.com/repo/10.1/ubuntu trusty main" > /etc/apt/sources.list.d/mariadb.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    && apt-get install -y mariadb-server \
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf \
+    && sed -i "/default-character-set/d" /etc/mysql/conf.d/mariadb.cnf \
+    && sed -i "/\[mysqld]/a skip-character-set-client-handshake" /etc/mysql/conf.d/mariadb.cnf \
+    && sed -i "/\[mysqld]/a collation-server=utf8_unicode_ci" /etc/mysql/conf.d/mariadb.cnf \
+    && sed -i "/\[mysqld]/a character-set-server=utf8" /etc/mysql/conf.d/mariadb.cnf \
+    && sed -i "/\[mysqld]/a init_connect= 'SET NAMES utf8' " /etc/mysql/conf.d/mariadb.cnf \
+    && sed -i "/\[mysqld]/a init_connect= 'SET collation_connection = utf8_unicode_ci' " /etc/mysql/conf.d/mariadb.cnf
+
+
 # Install php
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
@@ -210,8 +225,6 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
 RUN pecl install xdebug \
     && echo "zend_extension=xdebug.so" > ${PHP_INI_DIR}/conf.d/xdebug.ini
 
-RUN pecl install v8js
-
 RUN apt-add-repository ppa:pinepain/libv8-5.2 -y \
     && apt-get update \
     && apt-get install libv8-5.2-dev -y --allow-unauthenticated
@@ -231,10 +244,11 @@ COPY files /
 
 RUN bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" && rm -rf /usr/src/pecl/*
 
-VOLUME ["/var/www", "/etc/nginx", "/etc/php"]
+VOLUME ["/var/www", "/etc/nginx", "/etc/mysql", "/var/lib/mysql", "/etc/php"]
 
 EXPOSE 80
 EXPOSE 443
+EXPOSE 3306
 EXPOSE 9000
 
 CMD ["/run.sh"]
