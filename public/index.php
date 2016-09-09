@@ -22,6 +22,15 @@ try {
     // Create a DI
     $di = new FactoryDefault();
 
+    $di->set('db', function () {
+        return new DbAdapter([
+            "host"     => "localhost",
+            "username" => "db_user",
+            "password" => "db_password",
+            "dbname"   => "new_db"
+        ]);
+    });
+
     // Setup the view component
     $di->set('view', function () {
         $view = new View();
@@ -49,6 +58,14 @@ try {
                     "namespace"  => "App\Controllers",
                     "controller" => "index",
                     "action"     => "index"
+                ]
+            );
+            $router->add(
+                "/test",
+                [
+                    "namespace"  => "App\Controllers",
+                    "controller" => "index",
+                    "action"     => "test"
                 ]
             );
 
