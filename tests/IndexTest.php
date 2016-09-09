@@ -1,7 +1,7 @@
 <?php
-use PHPUnit\Framework\TestCase;
+namespace Test;
 
-class IndexTest extends TestCase
+class IndexTest extends \UnitTestCase
 {
     public function testHello()
     {
@@ -16,4 +16,3 @@ class IndexTest extends TestCase
         $this->assertEquals(0, count($stack));
     }
 }
-

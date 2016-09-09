@@ -11,6 +11,6 @@
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.6",
         "phpmd/phpmd": "^2.4",
-        "phalcon/incubator": "dev-master"
+        "phalcon/incubator": "~3.0"
     }
 }

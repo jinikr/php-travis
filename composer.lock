@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e2fea9cb994bdde8bb015586560702f1",
-    "content-hash": "88631fdea24f1337cf46cf7781f0e555",
+    "hash": "80e415448bcc08ca0b3f596c6b5cec9a",
+    "content-hash": "c5203e80768b56f592252f91fbe71427",
     "packages": [],
     "packages-dev": [
         {
@@ -50,7 +50,7 @@
         },
         {
             "name": "phalcon/incubator",
-            "version": "dev-master",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phalcon/incubator.git",
@@ -473,9 +473,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phalcon/incubator": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
