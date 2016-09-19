@@ -1,6 +1,8 @@
 <?php
 
 use Phalcon\Di;
+use Phalcon\Di\FactoryDefault;
+use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
 use Phalcon\Test\UnitTestCase as PhalconTestCase;
 
 abstract class UnitTestCase extends PhalconTestCase
@@ -22,14 +24,24 @@ abstract class UnitTestCase extends PhalconTestCase
 
     public function setUp()
     {
-        parent::setUp();
+        $this->checkExtension('phalcon');
 
-        // Load any additional services that might be required during testing
-        $di = Di::getDefault();
+        // Reset the DI container
+        Di::reset();
 
-        // Get any DI components here. If you have a config, be sure to pass it to the parent
+        // Instantiate a new DI container
+        $di = new FactoryDefault();
 
-        $this->setDi($di);
+        $di->set('db', function () {
+            return new DbAdapter([
+                "host"     => "localhost",
+                "username" => "db_user",
+                "password" => "db_password",
+                "dbname"   => "new_db"
+            ]);
+        });
+
+        $this->di = $di;
 
         $this->_loaded = true;
     }

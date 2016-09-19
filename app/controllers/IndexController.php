@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
+use App\Models\Test;
 
 class IndexController extends Controller
 {
@@ -10,5 +11,11 @@ class IndexController extends Controller
     public function indexAction()
     {
         return "<h1>Hello! PHP</h1>";
+    }
+
+    public function testAction()
+    {
+        $test = new Test();
+        return $this->response->setJsonContent($test->selectAll());
     }
 }

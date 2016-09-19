@@ -163,19 +163,28 @@ RUN userdel www-data && groupadd -r www-data -g 433 && \
     chmod 711 /var/www && \
     mkdir -p /etc/nginx/conf.d/
 
+COPY files/etc/database/init.sql /tmp/init.sql
+
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0xcbcb082a1bb943db \
     && echo "deb http://mariadb.mirror.iweb.com/repo/10.1/ubuntu trusty main" > /etc/apt/sources.list.d/mariadb.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get install -y mariadb-server \
     && rm -rf /var/lib/apt/lists/* \
-    && sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf \
+    && sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf \
     && sed -i "/default-character-set/d" /etc/mysql/conf.d/mariadb.cnf \
     && sed -i "/\[mysqld]/a skip-character-set-client-handshake" /etc/mysql/conf.d/mariadb.cnf \
     && sed -i "/\[mysqld]/a collation-server=utf8_unicode_ci" /etc/mysql/conf.d/mariadb.cnf \
     && sed -i "/\[mysqld]/a character-set-server=utf8" /etc/mysql/conf.d/mariadb.cnf \
     && sed -i "/\[mysqld]/a init_connect= 'SET NAMES utf8' " /etc/mysql/conf.d/mariadb.cnf \
-    && sed -i "/\[mysqld]/a init_connect= 'SET collation_connection = utf8_unicode_ci' " /etc/mysql/conf.d/mariadb.cnf
+    && sed -i "/\[mysqld]/a init_connect= 'SET collation_connection = utf8_unicode_ci' " /etc/mysql/conf.d/mariadb.cnf \
+    && echo "mysqld_safe &" > /tmp/config \
+    && echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config \
+    && echo "mysql -e 'CREATE USER \"db_user\"@\"%\" IDENTIFIED BY \"db_password\";'" >> /tmp/config \
+    && echo "mysql -e 'GRANT ALL PRIVILEGES ON *.* TO \"db_user\"@\"%\" WITH GRANT OPTION;'" >> /tmp/config \
+    && echo "mysql -e 'CREATE DATABASE new_db;'" >> /tmp/config \
+    && echo "mysql new_db < /tmp/init.sql" >> /tmp/config \
+    && bash /tmp/config && rm -f /tmp/config
 
 
 # Install php
@@ -202,7 +211,8 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys ${PHP7_KEY} \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps \
     && make clean
 
-RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
+RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini \
+    && sed -i 's/pdo_mysql\.default_socket\=/pdo_mysql\.default_socket\=\/var\/run\/mysqld\/mysqld\.sock/' ${PHP_INI_DIR}/php.ini
 
 RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VER}.tar.gz \
