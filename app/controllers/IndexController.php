@@ -10,7 +10,7 @@ class IndexController extends Controller
 
     public function indexAction()
     {
-        return "<h1>Hello!</h1>";
+        return "<h1>Hello! PHP</h1>";
     }
 
     public function testAction()
